@@ -1,9 +1,9 @@
+use serde::Serialize;
 use std::env;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::os::unix::net::UnixStream;
 use std::thread;
-use serde::Serialize;
 
 #[derive(Debug)]
 enum HyprReadErrors {
@@ -28,7 +28,7 @@ impl Config {
 
 #[derive(Serialize, Debug)]
 struct Status {
-    text: String
+    text: String,
 }
 
 impl std::fmt::Display for Status {
@@ -38,18 +38,24 @@ impl std::fmt::Display for Status {
 }
 
 pub fn handle_event(event: String) {
-    let vec: Vec<&str> = event.split(',').collect();
-    let mut text = vec.last().unwrap().to_string();
-    text.truncate(64);
+    if event.starts_with("activewindow") {
+        let vec: Vec<&str> = event.split(',').collect();
+        let mut text = vec.last().unwrap().to_string();
 
-    let active_window = Status { text };
+        if !text.is_empty() {
+            text.truncate(64);
 
-    println!("{active_window}");
+            let active_window = Status { text };
+
+            println!("{active_window}");
+        }
+    }
 }
 
 pub fn start_client() -> std::io::Result<()> {
     let config = Config::build().expect("could not locate Hyprland instance");
-    let socket = UnixStream::connect(config.read_path).expect("could not connect to Hyprland instance");
+    let socket =
+        UnixStream::connect(config.read_path).expect("could not connect to Hyprland instance");
     let reader = BufReader::new(socket);
 
     for event in reader.lines().flatten() {
