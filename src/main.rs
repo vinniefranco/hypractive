@@ -40,7 +40,10 @@ impl Config {
 
 fn handle_event(event: String) {
     let vec: Vec<&str> = event.split(',').collect();
-    let active_window = Status { text: vec.last().unwrap().to_string() };
+    let mut text = vec.last().unwrap().to_string();
+    text.truncate(64);
+
+    let active_window = Status { text };
 
     println!("{active_window}");
 }
