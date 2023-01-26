@@ -52,10 +52,8 @@ pub fn start_client() -> std::io::Result<()> {
     let socket = UnixStream::connect(config.read_path).expect("could not connect to Hyprland instance");
     let reader = BufReader::new(socket);
 
-    for line in reader.lines() {
-        if let Ok(event) = line {
-            thread::spawn(|| handle_event(event));
-        }
+    for event in reader.lines().flatten() {
+        thread::spawn(|| handle_event(event));
     }
 
     Ok(())
