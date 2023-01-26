@@ -1,7 +1,6 @@
 use serde::Serialize;
 use std::env;
-use std::io::BufRead;
-use std::io::BufReader;
+use std::io::{BufRead, BufReader};
 use std::os::unix::net::UnixStream;
 use std::thread;
 
