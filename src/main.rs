@@ -1,5 +1,5 @@
-use hypractive::start_client;
+use hypractive::run;
 
 fn main() -> std::io::Result<()> {
-    start_client()
+    run()
 }

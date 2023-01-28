@@ -57,20 +57,27 @@ pub fn handle_event(event: String) {
     }
 }
 
-pub fn start_client() -> std::io::Result<()> {
-    let config = Config::build().unwrap_or_else(|err| {
-        eprintln!("Environment error {err}");
-        process::exit(1);
-    });
-    let socket = UnixStream::connect(config.read_path).unwrap_or_else(|err| {
-        eprintln!("Could not connect to Hyprland: {err}");
-        process::exit(1);
-    });
-    let reader = BufReader::new(socket);
+fn connect_to_hyprland(config: Config) -> Result<(), std::io::Error> {
+    let socket: UnixStream = UnixStream::connect(config.read_path)?;
+    let reader: BufReader<UnixStream> = BufReader::new(socket);
 
     for event in reader.lines().flatten() {
         thread::spawn(|| handle_event(event));
     }
+
+    Ok(())
+}
+
+pub fn run() -> std::io::Result<()> {
+    let config = Config::build().unwrap_or_else(|err| {
+        eprintln!("Environment error {err}");
+        process::exit(1);
+    });
+
+    connect_to_hyprland(config).unwrap_or_else(|err| {
+        eprintln!("Could not connect to Hyprland: {err}");
+        process::exit(1);
+    });
 
     Ok(())
 }
