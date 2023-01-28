@@ -48,7 +48,9 @@ pub fn handle_event(event: String) {
         let text: &str = event.split(',').collect::<Vec<&str>>()[1];
 
         if !text.is_empty() {
-            let active_window = Status { text: text.to_string() };
+            let active_window = Status {
+                text: text.to_string(),
+            };
 
             println!("{active_window}");
         }
