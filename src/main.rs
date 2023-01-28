@@ -1,5 +1,5 @@
-mod hypr;
+use hypractive::start_client;
 
 fn main() -> std::io::Result<()> {
-    hypr::start_client()
+    start_client()
 }
