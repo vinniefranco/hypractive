@@ -45,13 +45,10 @@ impl std::fmt::Display for Status {
 
 pub fn handle_event(event: String) {
     if event.starts_with("activewindow") {
-        let vec: Vec<&str> = event.split(',').collect();
-        let mut text = vec.last().unwrap().to_string();
+        let text: &str = event.split(',').collect::<Vec<&str>>()[1];
 
         if !text.is_empty() {
-            text.truncate(64);
-
-            let active_window = Status { text };
+            let active_window = Status { text: text.to_string() };
 
             println!("{active_window}");
         }
